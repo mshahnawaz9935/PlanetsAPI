@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product App</title>
+</head>
+<body>
+    <style>
+        li {
+            list-style-type: none;
+            font-weight: bold;
+        }
+    </style>
+
+    
+    <div  style="float:left;height:30%;width:40%;">
+        <h1>Planet Database.com</h1>
+
+        <br />
+        <br />
+        <h3>Welcome to Planet Database.com</h3>
+        <br />
+        <p>Please see the lists of the planets in the solar system on the right hand side.</p>
+        <p id="planet" ></p>
+    </div>
+    <div style="margin-left:10px;margin-top:70px;float:left;height:30%;width:20%;">
+        <h2>SOLAR SYSTEM</h2>
+        <ul id="planets" />
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+    var uri = 'api/Planets';
+
+    $(document).ready(function () {
+
+      $.getJSON(uri)
+          .done(function (data) {
+              var x = 1;
+            $.each(data, function (key, item) {
+     
+                $('<li>', { text: formatItem(item) }).appendTo($('#planets'));
+                $('<p id=p' + x + '>').appendTo($('#planets'));
+                x++;
+            });
+
+            $('ul li').click(function () { console.log($(this).index()); find2($(this).index()); });
+            });
+       
+     
+    
+    });
+
+    function formatItem(item) {
+ 
+        return item.name;
+    }
+
+    function find() {
+      var id = $('#planetId').val();
+      $.getJSON(uri + '/' + id)
+          .done(function (data) {
+            $('#planet').text(formatItem(data));
+          })
+          .fail(function (jqXHR, textStatus, err) {
+            $('#planet').text('Error: ' + err);
+          });
+        }
+        function find2(id) {
+          id = ((id / 2) + 1);
+        
+            $.getJSON(uri)
+                .done(function (data) {
+                    $.each(data, function (key, item) {
+                        console.log('element clicked is' + (id));
+                        console.log('data is x', key, 'y', item);
+                        $('#p' + item.id + '').text('');
+
+                    });
+                    $.getJSON(uri + '/' + (id))
+                        .done(function (data) {
+
+                            if (data.id)
+                                $('#p' + id).text(data.distance + " kms away from sun");
+
+
+                        })
+                        .fail(function (jqXHR, textStatus, err) {
+                            $('#planet').text('Error: ' + err);
+                        });
+
+                });
+           
+        }
+    </script>
+</body>
+</html>
